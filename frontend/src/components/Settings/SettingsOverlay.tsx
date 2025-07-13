@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useConfig } from "../../contexts/ConfigContext";
 
 interface SettingsOverlayProps {
 	isOpen: boolean;
@@ -6,15 +6,13 @@ interface SettingsOverlayProps {
 }
 
 export function SettingsOverlay({ isOpen, onClose }: SettingsOverlayProps) {
-	// These would come from config context or API in a real app
-	const [clockActive, setClockActive] = useState(true);
-	const [clockType, setClockType] = useState<"digital" | "analog">("digital");
+	const { config, updateClock } = useConfig();
 
 	if (!isOpen) return null;
 
 	return (
 		<div className="settings-overlay">
-			{/* Backdrop blur */}
+			{/* Backdrop */}
 			<div
 				className="settings-backdrop"
 				onClick={onClose}
@@ -30,7 +28,7 @@ export function SettingsOverlay({ isOpen, onClose }: SettingsOverlayProps) {
 				}}
 			/>
 
-			{/* Glass panel */}
+			{/* Settings Panel */}
 			<div
 				className="settings-panel"
 				style={{
@@ -83,71 +81,66 @@ export function SettingsOverlay({ isOpen, onClose }: SettingsOverlayProps) {
 					×
 				</button>
 
-				<div className="settings-content">
-					<h1 style={{ marginBottom: "32px", fontSize: "28px", fontWeight: "600" }}>Display Settings</h1>
+				<h1 style={{ marginBottom: "32px", fontWeight: 600 }}>Settings</h1>
 
-					<section style={{ marginBottom: 32 }}>
-						<h2 style={{ marginBottom: "16px", fontSize: "20px", fontWeight: "500" }}>Clock Settings</h2>
-						<div style={{ display: "flex", alignItems: "center", gap: 24, flexWrap: "wrap" }}>
-							<label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "16px" }}>
-								<input
-									type="checkbox"
-									checked={clockActive}
-									onChange={(e) => setClockActive(e.target.checked)}
-									style={{ transform: "scale(1.2)" }}
-								/>
-								Active
-							</label>
-							<label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "16px" }}>
-								<input
-									type="radio"
-									name="clockType"
-									value="digital"
-									checked={clockType === "digital"}
-									onChange={() => setClockType("digital")}
-									style={{ transform: "scale(1.2)" }}
-								/>
-								Digital
-							</label>
-							<label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "16px" }}>
-								<input
-									type="radio"
-									name="clockType"
-									value="analog"
-									checked={clockType === "analog"}
-									onChange={() => setClockType("analog")}
-									style={{ transform: "scale(1.2)" }}
-								/>
-								Analog
-							</label>
+				{/* Clock Settings */}
+				<section style={{ marginBottom: "32px" }}>
+					<h2 style={{ marginBottom: "16px", fontWeight: 500 }}>Clock</h2>
+
+					<div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+						{/* Active Toggle */}
+						<label style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+							<input
+								type="checkbox"
+								checked={config.clock.active}
+								onChange={(e) => updateClock({ active: e.target.checked })}
+								style={{ transform: "scale(1.2)" }}
+							/>
+							Active
+						</label>
+
+						{/* Type Selection */}
+						<div>
+							<label style={{ display: "block", marginBottom: "8px" }}>Type:</label>
+							<select
+								value={config.clock.type}
+								onChange={(e) => updateClock({ type: e.target.value as "analog" | "digital" })}
+								style={{
+									background: "rgba(255, 255, 255, 0.1)",
+									border: "1px solid rgba(255, 255, 255, 0.3)",
+									borderRadius: "8px",
+									padding: "8px 12px",
+									color: "white",
+									fontSize: "16px",
+								}}
+							>
+								<option value="analog">Analog</option>
+								<option value="digital">Digital</option>
+							</select>
 						</div>
-					</section>
 
-					{/* Placeholder for future settings */}
-					<section style={{ marginBottom: 32 }}>
-						<h2 style={{ marginBottom: "16px", fontSize: "20px", fontWeight: "500" }}>Schedule Settings</h2>
-						<p style={{ color: "rgba(255, 255, 255, 0.7)", fontSize: "14px" }}>Coming soon...</p>
-					</section>
+						{/* Show Date Toggle */}
+						<label style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+							<input
+								type="checkbox"
+								checked={config.clock.showDate}
+								onChange={(e) => updateClock({ showDate: e.target.checked })}
+								style={{ transform: "scale(1.2)" }}
+							/>
+							Show Date
+						</label>
+					</div>
+				</section>
 
-					<section style={{ marginBottom: 32 }}>
-						<h2 style={{ marginBottom: "16px", fontSize: "20px", fontWeight: "500" }}>Background Settings</h2>
-						<p style={{ color: "rgba(255, 255, 255, 0.7)", fontSize: "14px" }}>Coming soon...</p>
-					</section>
-				</div>
+				{/* Instructions */}
+				<section style={{ marginBottom: "32px" }}>
+					<h2 style={{ marginBottom: "16px", fontWeight: 500 }}>Clock Controls</h2>
+					<div style={{ fontSize: "14px", opacity: 0.8, lineHeight: 1.5 }}>
+						<p style={{ marginBottom: "8px" }}>• Drag the clock to move it around the screen</p>
+						<p>• Double-click the clock to show resize handles</p>
+					</div>
+				</section>
 			</div>
-
-			<style>{`
-        @keyframes settingsSlideIn {
-          from {
-            opacity: 0;
-            transform: translate(-50%, -60%);
-          }
-          to {
-            opacity: 1;
-            transform: translate(-50%, -50%);
-          }
-        }
-      `}</style>
 		</div>
 	);
 }

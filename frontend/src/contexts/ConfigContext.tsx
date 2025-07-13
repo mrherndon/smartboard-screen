@@ -1,53 +1,55 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 
-// Temporary local types until shared package is properly linked
+interface ClockConfig {
+	active: boolean;
+	type: "analog" | "digital";
+	showDate: boolean;
+	position: { x: number; y: number };
+	size: { width: number; height: number };
+}
+
 interface AppConfig {
-	clockFormat: "12h" | "24h";
-	clockStyle: "analog" | "digital";
-	theme: "light" | "dark";
 	backgroundImageUrl?: string;
-	skrimOpacity: number;
+	clock: ClockConfig;
 }
 
 interface ConfigContextType {
 	config: AppConfig;
 	updateConfig: (updates: Partial<AppConfig>) => void;
-	loading: boolean;
+	updateClock: (updates: Partial<ClockConfig>) => void;
 }
-
-const defaultConfig: AppConfig = {
-	clockFormat: "12h",
-	clockStyle: "analog",
-	theme: "dark",
-	skrimOpacity: 0.7,
-};
 
 const ConfigContext = createContext<ConfigContextType | undefined>(undefined);
 
-interface ConfigProviderProps {
-	children: ReactNode;
-}
-
-export function ConfigProvider({ children }: ConfigProviderProps) {
-	const [config, setConfig] = useState<AppConfig>(defaultConfig);
-	const [loading, setLoading] = useState(false);
+export function ConfigProvider({ children }: { children: ReactNode }) {
+	const [config, setConfig] = useState<AppConfig>({
+		backgroundImageUrl: "/backgrounds/default.jpg",
+		clock: {
+			active: true,
+			type: "analog",
+			showDate: true,
+			position: { x: 50, y: 50 }, // Center by default (percentage)
+			size: { width: 200, height: 200 },
+		},
+	});
 
 	const updateConfig = (updates: Partial<AppConfig>) => {
 		setConfig((prev) => ({ ...prev, ...updates }));
 	};
 
-	const value = {
-		config,
-		updateConfig,
-		loading,
+	const updateClock = (updates: Partial<ClockConfig>) => {
+		setConfig((prev) => ({
+			...prev,
+			clock: { ...prev.clock, ...updates },
+		}));
 	};
 
-	return <ConfigContext.Provider value={value}>{children}</ConfigContext.Provider>;
+	return <ConfigContext.Provider value={{ config, updateConfig, updateClock }}>{children}</ConfigContext.Provider>;
 }
 
 export function useConfig() {
 	const context = useContext(ConfigContext);
-	if (context === undefined) {
+	if (!context) {
 		throw new Error("useConfig must be used within a ConfigProvider");
 	}
 	return context;

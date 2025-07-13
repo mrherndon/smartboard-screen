@@ -1,13 +1,10 @@
 import { DigitalClock } from "./DigitalClock";
 import { AnalogClock } from "./AnalogClock";
+import { useConfig } from "../../contexts/ConfigContext";
 
-// TODO: Replace with context/config props
-export interface ClockProps {
-	type?: "digital" | "analog";
-	active?: boolean;
-}
+export function Clock() {
+	const { config } = useConfig();
 
-export function Clock({ type = "digital", active = true }: ClockProps) {
-	if (!active) return null;
-	return type === "analog" ? <AnalogClock /> : <DigitalClock />;
+	if (!config.clockActive) return null;
+	return config.clockStyle === "analog" ? <AnalogClock /> : <DigitalClock />;
 }
