@@ -25,20 +25,20 @@ Get all active schedule entries for current day.
 
 ```json
 {
-	"success": true,
-	"data": [
-		{
-			"id": "schedule_001",
-			"title": "Mathematics",
-			"startTime": "2025-07-12T09:00:00Z",
-			"endTime": "2025-07-12T09:50:00Z",
-			"dayOfWeek": 1,
-			"location": "Room 101",
-			"instructor": "Ms. Johnson",
-			"isActive": true,
-			"color": "#4F46E5"
-		}
-	]
+  "success": true,
+  "data": [
+    {
+      "id": "schedule_001",
+      "title": "Mathematics",
+      "startTime": "2025-07-12T09:00:00Z",
+      "endTime": "2025-07-12T09:50:00Z",
+      "dayOfWeek": 1,
+      "location": "Room 101",
+      "instructor": "Ms. Johnson",
+      "isActive": true,
+      "color": "#4F46E5"
+    }
+  ]
 }
 ```
 
@@ -50,13 +50,13 @@ Create new schedule entry. (Admin only)
 
 ```json
 {
-	"title": "Physics",
-	"startTime": "2025-07-12T10:00:00Z",
-	"endTime": "2025-07-12T10:50:00Z",
-	"dayOfWeek": 1,
-	"location": "Lab 201",
-	"instructor": "Dr. Smith",
-	"color": "#059669"
+  "title": "Physics",
+  "startTime": "2025-07-12T10:00:00Z",
+  "endTime": "2025-07-12T10:50:00Z",
+  "dayOfWeek": 1,
+  "location": "Lab 201",
+  "instructor": "Dr. Smith",
+  "color": "#059669"
 }
 ```
 
@@ -78,20 +78,20 @@ Get application configuration.
 
 ```json
 {
-	"success": true,
-	"data": {
-		"id": "main_config",
-		"backgroundImageUrl": "https://example.com/background.jpg",
-		"clockFormat": "12h",
-		"timezone": "America/New_York",
-		"theme": "dark",
-		"refreshInterval": 30,
-		"displaySettings": {
-			"showLocation": true,
-			"showInstructor": true,
-			"countdownFormat": "full"
-		}
-	}
+  "success": true,
+  "data": {
+    "id": "main_config",
+    "backgroundImageUrl": "https://example.com/background.jpg",
+    "clockFormat": "12h",
+    "timezone": "America/New_York",
+    "theme": "dark",
+    "refreshInterval": 30,
+    "displaySettings": {
+      "showLocation": true,
+      "showInstructor": true,
+      "countdownFormat": "full"
+    }
+  }
 }
 ```
 
@@ -109,8 +109,8 @@ Authenticate admin user.
 
 ```json
 {
-	"username": "admin",
-	"password": "password"
+  "username": "admin",
+  "password": "password"
 }
 ```
 
@@ -118,11 +118,11 @@ Authenticate admin user.
 
 ```json
 {
-	"success": true,
-	"data": {
-		"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-		"expiresIn": 3600
-	}
+  "success": true,
+  "data": {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "expiresIn": 3600
+  }
 }
 ```
 
@@ -136,13 +136,13 @@ Service health status.
 
 ```json
 {
-	"success": true,
-	"data": {
-		"status": "healthy",
-		"timestamp": "2025-07-12T15:30:00Z",
-		"version": "1.0.0",
-		"database": "connected"
-	}
+  "success": true,
+  "data": {
+    "status": "healthy",
+    "timestamp": "2025-07-12T15:30:00Z",
+    "version": "1.0.0",
+    "database": "connected"
+  }
 }
 ```
 
@@ -152,15 +152,15 @@ All endpoints return errors in the following format:
 
 ```json
 {
-	"success": false,
-	"error": {
-		"code": "VALIDATION_ERROR",
-		"message": "Invalid input data",
-		"details": {
-			"field": "startTime",
-			"reason": "Invalid date format"
-		}
-	}
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid input data",
+    "details": {
+      "field": "startTime",
+      "reason": "Invalid date format"
+    }
+  }
 }
 ```
 

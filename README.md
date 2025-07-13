@@ -33,18 +33,19 @@ smartboard-screen/
 
 1. Install dependencies:
 
-```bash
-npm run install:all
-```
+   ```bash
+   npm run install:all
+   ```
 
 2. Start development servers:
 
-```bash
-npm run dev
-```
+   ```bash
+   npm run dev
+   ```
 
-3. Open [http://localhost:3000](http://localhost:3000) for frontend
-4. Backend API runs on [http://localhost:8080](http://localhost:8080)
+3. Open the frontend at [http://localhost:3000](http://localhost:3000).
+
+4. The backend API will be available at [http://localhost:8080](http://localhost:8080).
 
 ## Current Status
 
