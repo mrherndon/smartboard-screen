@@ -1,0 +1,390 @@
+/* Global styles for Smartboard Screen Application */
+
+* {
+	box-sizing: border-box;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Open Sans",
+		"Helvetica Neue", sans-serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	height: 100vh;
+	overflow: hidden;
+}
+
+#root {
+	height: 100vh;
+	width: 100vw;
+}
+
+.app {
+	height: 100vh;
+	width: 100vw;
+	position: relative;
+}
+
+/* Display screen styles */
+.display-screen {
+	height: 100vh;
+	width: 100vw;
+	position: relative;
+	overflow: hidden;
+	background: #000;
+}
+
+.background-container {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 1;
+}
+
+.background-image {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: center;
+}
+
+.display-overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 2;
+	display: grid;
+	grid-template-areas:
+		"clock clock clock"
+		"schedule schedule schedule"
+		"footer footer footer";
+	grid-template-rows: 1fr 2fr auto;
+	padding: 2rem;
+	gap: 2rem;
+}
+
+/* Component positioning */
+.clock-container {
+	grid-area: clock;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.schedule-container {
+	grid-area: schedule;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+.footer-container {
+	grid-area: footer;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+/* Skim backgrounds for contrast */
+.skim-background {
+	background: rgba(0, 0, 0, 0.7);
+	backdrop-filter: blur(10px);
+	border-radius: 1rem;
+	padding: 1.5rem;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.skim-light {
+	background: rgba(255, 255, 255, 0.9);
+	color: #1a1a1a;
+	border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Clock styles */
+.analog-clock {
+	width: 200px;
+	height: 200px;
+	border: 4px solid currentColor;
+	border-radius: 50%;
+	position: relative;
+	background: rgba(255, 255, 255, 0.1);
+}
+
+.clock-hand {
+	position: absolute;
+	background: currentColor;
+	transform-origin: bottom center;
+	border-radius: 2px;
+}
+
+.hour-hand {
+	width: 4px;
+	height: 60px;
+	top: 40px;
+	left: 50%;
+	margin-left: -2px;
+}
+
+.minute-hand {
+	width: 2px;
+	height: 80px;
+	top: 20px;
+	left: 50%;
+	margin-left: -1px;
+}
+
+.second-hand {
+	width: 1px;
+	height: 90px;
+	top: 10px;
+	left: 50%;
+	margin-left: -0.5px;
+	opacity: 0.8;
+}
+
+.clock-center {
+	position: absolute;
+	width: 12px;
+	height: 12px;
+	background: currentColor;
+	border-radius: 50%;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	z-index: 10;
+}
+
+.digital-clock {
+	font-size: 4rem;
+	font-weight: 300;
+	letter-spacing: 2px;
+	color: #fff;
+	text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Schedule styles */
+.current-class {
+	text-align: center;
+	margin-bottom: 2rem;
+}
+
+.class-title {
+	font-size: 3rem;
+	font-weight: 600;
+	margin-bottom: 0.5rem;
+	color: #fff;
+	text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.class-details {
+	font-size: 1.5rem;
+	opacity: 0.9;
+	margin-bottom: 1rem;
+}
+
+.countdown {
+	font-size: 2rem;
+	font-weight: 500;
+	color: #fbbf24;
+	text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.next-classes {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	max-width: 800px;
+	width: 100%;
+}
+
+.next-class-item {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1rem;
+	border-radius: 0.5rem;
+	background: rgba(255, 255, 255, 0.1);
+	border-left: 4px solid;
+}
+
+/* Admin interface styles */
+.admin-container {
+	min-height: 100vh;
+	background: #f8fafc;
+	color: #1a1a1a;
+}
+
+.admin-header {
+	background: #fff;
+	border-bottom: 1px solid #e2e8f0;
+	padding: 1rem 2rem;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.admin-content {
+	padding: 2rem;
+	max-width: 1200px;
+	margin: 0 auto;
+}
+
+.form-group {
+	margin-bottom: 1.5rem;
+}
+
+.form-label {
+	display: block;
+	font-weight: 600;
+	margin-bottom: 0.5rem;
+	color: #374151;
+}
+
+.form-input {
+	width: 100%;
+	padding: 0.75rem;
+	border: 1px solid #d1d5db;
+	border-radius: 0.5rem;
+	font-size: 1rem;
+	transition: border-color 0.2s;
+}
+
+.form-input:focus {
+	outline: none;
+	border-color: #3b82f6;
+	box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.btn {
+	padding: 0.75rem 1.5rem;
+	border: none;
+	border-radius: 0.5rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.2s;
+	text-decoration: none;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.btn-primary {
+	background: #3b82f6;
+	color: #fff;
+}
+
+.btn-primary:hover {
+	background: #2563eb;
+}
+
+.btn-secondary {
+	background: #6b7280;
+	color: #fff;
+}
+
+.btn-secondary:hover {
+	background: #4b5563;
+}
+
+.btn-danger {
+	background: #ef4444;
+	color: #fff;
+}
+
+.btn-danger:hover {
+	background: #dc2626;
+}
+
+/* Loading spinner */
+.loading-spinner {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100vh;
+	background: #000;
+}
+
+.spinner {
+	width: 40px;
+	height: 40px;
+	border: 4px solid #333;
+	border-top: 4px solid #fff;
+	border-radius: 50%;
+	animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+	.display-overlay {
+		grid-template-areas:
+			"clock"
+			"schedule"
+			"footer";
+		grid-template-rows: auto 1fr auto;
+		padding: 1rem;
+		gap: 1rem;
+	}
+
+	.digital-clock {
+		font-size: 2.5rem;
+	}
+
+	.class-title {
+		font-size: 2rem;
+	}
+
+	.analog-clock {
+		width: 150px;
+		height: 150px;
+	}
+
+	.admin-content {
+		padding: 1rem;
+	}
+}
+
+/* Utility classes */
+.hidden {
+	display: none;
+}
+
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+.fade-in {
+	animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
