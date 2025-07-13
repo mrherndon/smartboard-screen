@@ -25,17 +25,45 @@ export function DraggableClock() {
 	const [currentResizeHandle, setCurrentResizeHandle] = useState<string>("");
 	const containerRef = useRef<HTMLDivElement>(null);
 
+	// Calculate container dimensions based on clock type and settings
+	const getContainerDimensions = () => {
+		const baseSize = config.clock.size.width;
+		const padding = 24; // Increased padding for better visual balance
+
+		if (config.clock.type === "analog") {
+			// Analog clock: container size matches clock size with padding
+			const width = baseSize + padding * 2;
+			const height = baseSize + padding * 2 + (config.clock.showDate ? 40 : 0);
+			return { width, height, clockSize: baseSize };
+		} else {
+			// Digital clock: more compact container, size based on text readability
+			const digitalHeight = Math.max(60, baseSize * 0.4); // More reasonable height for digital
+			const digitalWidth = Math.max(200, baseSize); // Maintain width for readability
+			const width = digitalWidth + padding * 2;
+			const height = digitalHeight + padding * 2 + (config.clock.showDate ? 40 : 0);
+			return { width, height, clockSize: digitalWidth, digitalHeight };
+		}
+	};
+
+	const { width: containerWidth, height: containerHeight, clockSize, digitalHeight } = getContainerDimensions();
+
 	// Handle mouse move for dragging and resizing
 	useEffect(() => {
 		const handleMouseMove = (e: MouseEvent) => {
 			if (isDragging) {
+				// Calculate new position accounting for container size to prevent leaving screen
+				const halfWidth = (containerWidth / 2 / window.innerWidth) * 100;
+				const halfHeight = (containerHeight / 2 / window.innerHeight) * 100;
+
 				const newX = ((e.clientX - dragOffset.x) / window.innerWidth) * 100;
 				const newY = ((e.clientY - dragOffset.y) / window.innerHeight) * 100;
+
+				// Constrain to screen bounds
+				const constrainedX = Math.max(halfWidth, Math.min(100 - halfWidth, newX));
+				const constrainedY = Math.max(halfHeight, Math.min(100 - halfHeight, newY));
+
 				updateClock({
-					position: {
-						x: Math.max(0, Math.min(100, newX)),
-						y: Math.max(0, Math.min(100, newY)),
-					},
+					position: { x: constrainedX, y: constrainedY },
 				});
 			}
 
@@ -68,7 +96,12 @@ export function DraggableClock() {
 
 				// Maintain aspect ratio and enforce minimum size
 				const minSize = 100;
-				const maxSize = 400;
+				// Calculate max size based on screen dimensions - no hard limit
+				const screenPadding = 50;
+				const maxWidthBasedOnScreen = window.innerWidth - screenPadding * 2;
+				const maxHeightBasedOnScreen = window.innerHeight - screenPadding * 2;
+				const maxSize = Math.min(maxWidthBasedOnScreen, maxHeightBasedOnScreen);
+
 				const size = Math.max(minSize, Math.min(maxSize, Math.max(newWidth, newHeight)));
 
 				updateClock({
@@ -92,7 +125,16 @@ export function DraggableClock() {
 			document.removeEventListener("mousemove", handleMouseMove);
 			document.removeEventListener("mouseup", handleMouseUp);
 		};
-	}, [isDragging, isResizing, dragOffset, resizeStart, currentResizeHandle, updateClock]);
+	}, [
+		isDragging,
+		isResizing,
+		dragOffset,
+		resizeStart,
+		currentResizeHandle,
+		updateClock,
+		containerWidth,
+		containerHeight,
+	]);
 
 	// Hide resize handles when clicking outside
 	useEffect(() => {
@@ -143,10 +185,6 @@ export function DraggableClock() {
 		});
 	};
 
-	// Calculate container dimensions based on clock size and date display
-	const containerWidth = config.clock.size.width + 32; // 16px padding on each side
-	const containerHeight = config.clock.size.height + 32 + (config.clock.showDate ? 30 : 0); // padding + date height
-
 	return (
 		<div
 			ref={containerRef}
@@ -165,7 +203,7 @@ export function DraggableClock() {
 			<div
 				className="skim-background"
 				style={{
-					padding: "16px",
+					padding: "24px", // Increased padding for better visual balance
 					borderRadius: "12px",
 					backgroundColor: "rgba(0, 0, 0, 0.3)",
 					backdropFilter: "blur(8px)",
@@ -177,7 +215,7 @@ export function DraggableClock() {
 					flexDirection: "column",
 					alignItems: "center",
 					justifyContent: "center",
-					gap: "8px",
+					gap: "12px",
 				}}
 			>
 				{/* Clock Component */}
@@ -187,13 +225,13 @@ export function DraggableClock() {
 						justifyContent: "center",
 						alignItems: "center",
 						flexShrink: 0,
+						...(config.clock.type === "digital" && {
+							height: `${digitalHeight}px`,
+							width: `${clockSize}px`,
+						}),
 					}}
 				>
-					{config.clock.type === "analog" ? (
-						<AnalogClock size={config.clock.size.width} />
-					) : (
-						<DigitalClock size={config.clock.size.width} />
-					)}
+					{config.clock.type === "analog" ? <AnalogClock size={clockSize} /> : <DigitalClock size={clockSize} />}
 				</div>
 
 				{/* Date Display */}
@@ -201,14 +239,14 @@ export function DraggableClock() {
 					<div
 						style={{
 							color: "white",
-							fontSize: `${Math.max(12, config.clock.size.width * 0.08)}px`,
+							fontSize: `${Math.max(12, clockSize * 0.08)}px`,
 							fontWeight: 500,
 							textAlign: "center",
 							textShadow: "0 2px 4px rgba(0, 0, 0, 0.8)",
 							whiteSpace: "nowrap",
 							overflow: "hidden",
 							textOverflow: "ellipsis",
-							maxWidth: `${config.clock.size.width}px`,
+							maxWidth: `${clockSize}px`,
 							flexShrink: 0,
 						}}
 					>

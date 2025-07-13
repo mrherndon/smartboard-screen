@@ -5,6 +5,6 @@ import { useConfig } from "../../contexts/ConfigContext";
 export function Clock() {
 	const { config } = useConfig();
 
-	if (!config.clockActive) return null;
-	return config.clockStyle === "analog" ? <AnalogClock /> : <DigitalClock />;
+	if (!config.clock.active) return null;
+	return config.clock.type === "analog" ? <AnalogClock /> : <DigitalClock />;
 }

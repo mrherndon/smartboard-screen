@@ -1,0 +1,15 @@
+{
+  // These settings are recommended for this project to ensure consistency.
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.eol": "\n",
+
+  "[markdown]": {
+    // Enforce spaces instead of tabs for markdown files to avoid linter errors.
+    "editor.insertSpaces": true,
+    // Set tab size to 2 or 4 spaces, 2 is common for markdown lists.
+    "editor.tabSize": 2,
+    // Ensure formatter is run on save for markdown files.
+    "editor.formatOnSave": true
+  }
+}
