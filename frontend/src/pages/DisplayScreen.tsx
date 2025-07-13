@@ -1,27 +1,37 @@
+import { useState } from "react";
+import { useConfig } from "../contexts/ConfigContext";
+import { GearIcon } from "../components/Settings/GearIcon";
+import { Clock } from "../components/Clock/Clock";
+import { SettingsOverlay } from "../components/Settings/SettingsOverlay";
+
 // Simple display screen for now - will expand with components later
 export default function DisplayScreen() {
+	const { config } = useConfig();
+	const backgroundUrl = config.backgroundImageUrl || "/backgrounds/default.jpg";
+	const [showSettings, setShowSettings] = useState(false);
+
 	return (
 		<div className="display-screen">
 			<div className="background-container">
-				<div
-					style={{
-						width: "100%",
-						height: "100%",
-						background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-					}}
-				/>
+				<img src={backgroundUrl} alt="Background" className="background-image" draggable={false} />
+			</div>
+
+			{/* Settings gear icon in top-right */}
+			<div
+				style={{
+					position: "absolute",
+					top: 16,
+					right: 16,
+					zIndex: 10,
+				}}
+			>
+				<GearIcon onClick={() => setShowSettings(true)} aria-label="Settings" />
 			</div>
 
 			<div className="display-overlay">
 				<div className="clock-container">
 					<div className="skim-background">
-						<div className="digital-clock">
-							{new Date().toLocaleTimeString([], {
-								hour: "2-digit",
-								minute: "2-digit",
-								hour12: true,
-							})}
-						</div>
+						<Clock />
 					</div>
 				</div>
 
@@ -40,6 +50,9 @@ export default function DisplayScreen() {
 					</div>
 				</div>
 			</div>
+
+			{/* Settings overlay */}
+			<SettingsOverlay isOpen={showSettings} onClose={() => setShowSettings(false)} />
 		</div>
 	);
 }

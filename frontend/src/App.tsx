@@ -27,6 +27,9 @@ function App() {
 				<Route path="/" element={<DisplayScreen />} />
 				<Route path="/display" element={<DisplayScreen />} />
 
+				{/* Public settings route */}
+				<Route path="/settings" element={<Settings />} />
+
 				{/* Auth route */}
 				<Route path="/login" element={<LoginPage />} />
 
