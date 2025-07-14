@@ -117,20 +117,20 @@ This document provides comprehensive context for GitHub Copilot when working on 
 
 ```typescript
 interface ScheduleEntry {
-	id: string;
-	title: string;
-	startTime: string; // ISO 8601 format
-	endTime: string; // ISO 8601 format
-	dayOfWeek: number; // 0=Sunday, 1=Monday, etc.
-	location?: string;
-	instructor?: string;
-	isActive: boolean;
-	color?: string; // Hex color for UI theming
-	userId: string; // Owner of this schedule entry
-	schoolId?: string; // Optional school/location identifier
-	notes?: string; // Additional notes
-	createdAt: string; // ISO 8601 format
-	updatedAt: string; // ISO 8601 format
+    id: string;
+    title: string;
+    startTime: string; // ISO 8601 format
+    endTime: string; // ISO 8601 format
+    dayOfWeek: number; // 0=Sunday, 1=Monday, etc.
+    location?: string;
+    instructor?: string;
+    isActive: boolean;
+    color?: string; // Hex color for UI theming
+    userId: string; // Owner of this schedule entry
+    schoolId?: string; // Optional school/location identifier
+    notes?: string; // Additional notes
+    createdAt: string; // ISO 8601 format
+    updatedAt: string; // ISO 8601 format
 }
 ```
 
@@ -138,30 +138,30 @@ interface ScheduleEntry {
 
 ```typescript
 interface AppConfig {
-	id: string;
-	userId: string; // Owner of this configuration
-	backgroundImageUrl?: string;
-	backgroundRotation: {
-		enabled: boolean;
-		interval: number; // minutes
-		groupId?: string; // ID of image group to rotate through
-	};
-	clockFormat: "12h" | "24h";
-	clockStyle: "analog" | "digital";
-	timezone: string;
-	theme: "light" | "dark";
-	refreshInterval: number; // seconds
-	displaySettings: {
-		showLocation: boolean;
-		showInstructor: boolean;
-		countdownFormat: "full" | "compact";
-		showNextClass: boolean;
-		maxUpcomingClasses: number;
-		skrimOpacity: number; // 0-1 for background contrast
-		skrimColor: string; // Color for background skrims
-	};
-	createdAt: string;
-	updatedAt: string;
+    id: string;
+    userId: string; // Owner of this configuration
+    backgroundImageUrl?: string;
+    backgroundRotation: {
+        enabled: boolean;
+        interval: number; // minutes
+        groupId?: string; // ID of image group to rotate through
+    };
+    clockFormat: "12h" | "24h";
+    clockStyle: "analog" | "digital";
+    timezone: string;
+    theme: "light" | "dark";
+    refreshInterval: number; // seconds
+    displaySettings: {
+        showLocation: boolean;
+        showInstructor: boolean;
+        countdownFormat: "full" | "compact";
+        showNextClass: boolean;
+        maxUpcomingClasses: number;
+        skrimOpacity: number; // 0-1 for background contrast
+        skrimColor: string; // Color for background skrims
+    };
+    createdAt: string;
+    updatedAt: string;
 }
 ```
 
@@ -169,40 +169,40 @@ interface AppConfig {
 
 ```typescript
 interface User {
-	id: string;
-	email: string;
-	name: string;
-	picture?: string;
-	role: "admin" | "user";
-	schoolId?: string;
-	createdAt: string;
-	updatedAt: string;
-	lastLoginAt: string;
+    id: string;
+    email: string;
+    name: string;
+    picture?: string;
+    role: "admin" | "user";
+    schoolId?: string;
+    createdAt: string;
+    updatedAt: string;
+    lastLoginAt: string;
 }
 
 interface ImageGroup {
-	id: string;
-	name: string;
-	description?: string;
-	userId: string;
-	imageIds: string[];
-	isDefault: boolean;
-	createdAt: string;
-	updatedAt: string;
+    id: string;
+    name: string;
+    description?: string;
+    userId: string;
+    imageIds: string[];
+    isDefault: boolean;
+    createdAt: string;
+    updatedAt: string;
 }
 
 interface BackgroundImage {
-	id: string;
-	filename: string;
-	originalName: string;
-	url: string;
-	thumbnailUrl?: string;
-	userId: string;
-	size: number; // bytes
-	mimeType: string;
-	width?: number;
-	height?: number;
-	uploadedAt: string;
+    id: string;
+    filename: string;
+    originalName: string;
+    url: string;
+    thumbnailUrl?: string;
+    userId: string;
+    size: number; // bytes
+    mimeType: string;
+    width?: number;
+    height?: number;
+    uploadedAt: string;
 }
 ```
 
@@ -269,12 +269,12 @@ smartboard-screen/
 ```typescript
 // Component with proper TypeScript and error boundaries
 interface ComponentProps {
-	// Always define props interface
+    // Always define props interface
 }
 
 export function Component({ prop }: ComponentProps) {
-	// Use proper hooks and error handling
-	return <div className="component-class">{/* Use semantic HTML */}</div>;
+    // Use proper hooks and error handling
+    return <div className="component-class">{/* Use semantic HTML */}</div>;
 }
 ```
 
@@ -283,14 +283,14 @@ export function Component({ prop }: ComponentProps) {
 ```typescript
 // Service functions with proper error handling
 export async function fetchSchedule(): Promise<ScheduleEntry[]> {
-	try {
-		const response = await fetch("/api/schedule");
-		if (!response.ok) throw new Error("Failed to fetch");
-		return response.json();
-	} catch (error) {
-		console.error("API Error:", error);
-		throw error;
-	}
+    try {
+        const response = await fetch("/api/schedule");
+        if (!response.ok) throw new Error("Failed to fetch");
+        return response.json();
+    } catch (error) {
+        console.error("API Error:", error);
+        throw error;
+    }
 }
 ```
 

@@ -23,7 +23,11 @@
     "clean": "rm -rf frontend/dist frontend/node_modules backend/dist backend/node_modules node_modules"
   },
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "@typescript-eslint/eslint-plugin": "^8.36.0",
+    "@typescript-eslint/parser": "^8.36.0",
+    "concurrently": "^8.2.2",
+    "eslint": "^9.31.0",
+    "eslint-plugin-react-hooks": "^5.2.0"
   },
   "workspaces": [
     "frontend",

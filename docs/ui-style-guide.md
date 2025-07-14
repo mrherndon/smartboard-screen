@@ -67,14 +67,14 @@ transition: all 0.2s;
 
 ```css
 @keyframes slideIn {
-	from {
-		opacity: 0;
-		transform: translate(-50%, -60%);
-	}
-	to {
-		opacity: 1;
-		transform: translate(-50%, -50%);
-	}
+    from {
+        opacity: 0;
+        transform: translate(-50%, -60%);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
 }
 ```
 
@@ -175,11 +175,11 @@ Always support customization through props:
 
 ```typescript
 interface GlassComponentProps {
-	blur?: number; // Backdrop blur intensity
-	opacity?: number; // Background opacity
-	borderRadius?: number; // Corner radius
-	onClose?: () => void; // Close handler
-	className?: string; // Additional CSS classes
+    blur?: number; // Backdrop blur intensity
+    opacity?: number; // Background opacity
+    borderRadius?: number; // Corner radius
+    onClose?: () => void; // Close handler
+    className?: string; // Additional CSS classes
 }
 ```
 
@@ -210,7 +210,7 @@ interface GlassComponentProps {
 ```css
 /* Fallback for older browsers */
 @supports not (backdrop-filter: blur(20px)) {
-	background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.9);
 }
 ```
 
@@ -226,11 +226,11 @@ interface GlassComponentProps {
 
 ```css
 @media (prefers-reduced-motion: reduce) {
-	* {
-		animation-duration: 0.01ms !important;
-		animation-iteration-count: 1 !important;
-		transition-duration: 0.01ms !important;
-	}
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
 }
 ```
 
