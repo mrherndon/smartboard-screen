@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useConfig } from "../../contexts/ConfigContext";
 import { ToggleSwitch } from "./ToggleSwitch";
 import { ClockSettingsMenu } from "./ClockSettingsMenu";
+import { MessageSettingsMenu } from "./MessageSettingsMenu";
 
 interface SettingsOverlayProps {
 	isOpen: boolean;
@@ -9,7 +10,7 @@ interface SettingsOverlayProps {
 }
 
 export function SettingsOverlay({ isOpen, onClose }: SettingsOverlayProps) {
-	const { config, updateClock } = useConfig();
+	const { config, updateClock, updateMessage, updateCountdownTimer } = useConfig();
 	const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
 
 	if (!isOpen) return null;
@@ -90,6 +91,8 @@ export function SettingsOverlay({ isOpen, onClose }: SettingsOverlayProps) {
 				{/* Main Settings or Submenu */}
 				{activeSubmenu === "clock" ? (
 					<ClockSettingsMenu onClose={() => setActiveSubmenu(null)} />
+				) : activeSubmenu === "message" ? (
+					<MessageSettingsMenu onClose={() => setActiveSubmenu(null)} />
 				) : (
 					<div className="settings-main">
 						{/* Clock Component Section */}
@@ -97,7 +100,7 @@ export function SettingsOverlay({ isOpen, onClose }: SettingsOverlayProps) {
 							<h2 style={{ marginBottom: "16px", fontWeight: 500 }}>Components</h2>
 
 							<div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-								{/* Clock Active Toggle */}
+								{/* Clock Component */}
 								<div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
 									<ToggleSwitch
 										label="Clock"
@@ -128,6 +131,52 @@ export function SettingsOverlay({ isOpen, onClose }: SettingsOverlayProps) {
 											Configure →
 										</button>
 									)}
+								</div>
+
+								<hr style={{ border: "none", borderTop: "1px solid rgba(255, 255, 255, 0.2)", margin: "8px 0" }} />
+
+								{/* Message Component */}
+								<div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+									<ToggleSwitch
+										label="Message"
+										isOn={config.components.message.isActive}
+										onToggle={() => updateMessage({ isActive: !config.components.message.isActive })}
+									/>
+									{config.components.message.isActive && (
+										<button
+											onClick={() => setActiveSubmenu("message")}
+											className="submenu-button"
+											style={{
+												background: "rgba(255, 255, 255, 0.1)",
+												border: "1px solid rgba(255, 255, 255, 0.3)",
+												borderRadius: "8px",
+												padding: "8px 16px",
+												color: "white",
+												fontSize: "14px",
+												cursor: "pointer",
+												transition: "all 0.2s",
+											}}
+											onMouseOver={(e) => {
+												e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
+											}}
+											onMouseOut={(e) => {
+												e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.1)";
+											}}
+										>
+											Configure →
+										</button>
+									)}
+								</div>
+
+								<hr style={{ border: "none", borderTop: "1px solid rgba(255, 255, 255, 0.2)", margin: "8px 0" }} />
+
+								{/* Countdown Timer Component */}
+								<div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+									<ToggleSwitch
+										label="Countdown Timer"
+										isOn={config.components.countdownTimer.isActive}
+										onToggle={() => updateCountdownTimer({ isActive: !config.components.countdownTimer.isActive })}
+									/>
 								</div>
 							</div>
 						</section>

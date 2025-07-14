@@ -14,7 +14,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import LoadingSpinner from "./components/LoadingSpinner";
 
 function App() {
-	const { user, loading } = useAuth();
+	const { loading } = useAuth();
 
 	if (loading) {
 		return <LoadingSpinner />;

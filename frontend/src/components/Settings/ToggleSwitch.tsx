@@ -15,7 +15,6 @@ const spring = {
 export function ToggleSwitch({ isOn, onToggle, label }: ToggleSwitchProps) {
 	return (
 		<div className="flex items-center gap-4">
-			{label && <span className="text-white font-medium">{label}</span>}
 			<div
 				className={`flex-shrink-0 w-16 h-8 flex items-center rounded-full p-1 cursor-pointer ${
 					isOn ? "bg-blue-500 justify-end" : "bg-gray-600 justify-start"
@@ -24,6 +23,7 @@ export function ToggleSwitch({ isOn, onToggle, label }: ToggleSwitchProps) {
 			>
 				<motion.div className="w-6 h-6 bg-white rounded-full shadow-md" layout transition={spring} />
 			</div>
+			{label && <span className="text-white font-medium">{label}</span>}
 		</div>
 	);
 }

@@ -2,11 +2,13 @@ import { useState } from "react";
 import { useConfig } from "../contexts/ConfigContext";
 import { GearIcon } from "../components/Settings/GearIcon";
 import { DraggableClock } from "../components/Clock/DraggableClock";
+import { DraggableMessage } from "../components/Message/DraggableMessage";
+import { DraggableCountdownTimer } from "../components/Timer/DraggableCountdownTimer";
 import { SettingsOverlay } from "../components/Settings/SettingsOverlay";
 
 // Simple display screen for now - will expand with components later
 export default function DisplayScreen() {
-	const { config } = useConfig();
+	const { config, updateMessage, updateCountdownTimer } = useConfig();
 	const backgroundUrl = config.backgroundImageUrl || "/backgrounds/default.jpg";
 	const [showSettings, setShowSettings] = useState(false);
 
@@ -28,7 +30,26 @@ export default function DisplayScreen() {
 				<GearIcon onClick={() => setShowSettings(true)} aria-label="Settings" />
 			</div>
 
-			<div className="display-overlay">{config.components.clock.isActive && <DraggableClock />}</div>
+			<div className="display-overlay">
+				{config.components.clock.isActive && <DraggableClock />}
+				{config.components.message.isActive && (
+					<DraggableMessage
+						size={config.components.message.size}
+						position={config.components.message.position}
+						onPositionChange={(position) => updateMessage({ position })}
+						onSizeChange={(size) => updateMessage({ size })}
+						text={config.components.message.text}
+					/>
+				)}
+				{config.components.countdownTimer.isActive && (
+					<DraggableCountdownTimer
+						size={config.components.countdownTimer.size}
+						position={config.components.countdownTimer.position}
+						onPositionChange={(position) => updateCountdownTimer({ position })}
+						onSizeChange={(size) => updateCountdownTimer({ size })}
+					/>
+				)}
+			</div>
 
 			{/* Settings overlay */}
 			<SettingsOverlay isOpen={showSettings} onClose={() => setShowSettings(false)} />

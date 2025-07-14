@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useConfig } from "../../contexts/ConfigContext";
 import { AnalogClock } from "./AnalogClock";
 import { DigitalClock } from "./DigitalClock";
+import { formatDate } from "../../utils/dateFormat";
 
 interface ResizeHandle {
 	position: "top-left" | "top-right" | "bottom-left" | "bottom-right";
@@ -193,14 +194,9 @@ export function DraggableClock() {
 		});
 	};
 
-	const formatDate = () => {
+	const formatDateString = () => {
 		const now = new Date();
-		return now.toLocaleDateString("en-US", {
-			weekday: "long",
-			year: "numeric",
-			month: "long",
-			day: "numeric",
-		});
+		return formatDate(now, config.components.clock.dateFormat);
 	};
 
 	return (
@@ -252,7 +248,7 @@ export function DraggableClock() {
 							flexShrink: 0,
 						}}
 					>
-						{formatDate()}
+						{formatDateString()}
 					</div>
 				)}
 

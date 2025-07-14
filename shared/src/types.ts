@@ -25,6 +25,7 @@ export interface ComponentConfig {
 export interface ClockConfig extends ComponentConfig {
 	type: "analog" | "digital";
 	showDate: boolean;
+	dateFormat: string; // Date format string (e.g., "MMM d, yyyy")
 	size: {
 		width: number;
 		height: number;
@@ -46,6 +47,8 @@ export interface AppConfig {
 	};
 	components: {
 		clock: ClockConfig;
+		message: MessageConfig;
+		countdownTimer: CountdownTimerConfig;
 		// Add other components here, e.g., schedule, weather
 	};
 	clockFormat: "12h" | "24h";
@@ -195,8 +198,20 @@ export const DEFAULT_CONFIG: Omit<AppConfig, "id" | "userId" | "createdAt" | "up
 			isActive: true,
 			type: "digital",
 			showDate: true,
+			dateFormat: "EEEE, MMMM d", // Default: "Monday, January 15"
 			size: { width: 300, height: 300 },
 			position: { x: 50, y: 50 },
+		},
+		message: {
+			isActive: false,
+			text: "Welcome to our classroom!",
+			size: 300,
+			position: { x: 70, y: 20 },
+		},
+		countdownTimer: {
+			isActive: false,
+			size: 250,
+			position: { x: 20, y: 70 },
 		},
 	},
 	clockFormat: "12h",
@@ -292,4 +307,22 @@ export interface WeeklySchedule {
 	};
 	createdAt: string;
 	updatedAt: string;
+}
+
+export interface MessageConfig extends ComponentConfig {
+	text: string;
+	fontSize?: number; // Override for custom font sizing
+	size: number;
+	position: {
+		x: number; // percentage
+		y: number; // percentage
+	};
+}
+
+export interface CountdownTimerConfig extends ComponentConfig {
+	size: number;
+	position: {
+		x: number; // percentage
+		y: number; // percentage
+	};
 }

@@ -1,5 +1,13 @@
-import { createContext, useContext, useState, ReactNode } from "react";
-import { AppConfig, ComponentConfig, ClockConfig, DEFAULT_CONFIG } from "../../../shared/src/types";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import {
+	AppConfig,
+	ComponentConfig,
+	ClockConfig,
+	MessageConfig,
+	CountdownTimerConfig,
+	DEFAULT_CONFIG,
+} from "../../../shared/src/types";
+import { configStorage } from "../utils/configStorage";
 
 type ComponentName = keyof AppConfig["components"];
 
@@ -8,19 +16,38 @@ interface ConfigContextType {
 	updateConfig: (updates: Partial<AppConfig>) => void;
 	updateComponent: (name: ComponentName, updates: Partial<ComponentConfig | ClockConfig>) => void;
 	updateClock: (updates: Partial<ClockConfig>) => void; // Keep for convenience
+	updateMessage: (updates: Partial<MessageConfig>) => void;
+	updateCountdownTimer: (updates: Partial<CountdownTimerConfig>) => void;
 }
 
 const ConfigContext = createContext<ConfigContextType | undefined>(undefined);
 
 export function ConfigProvider({ children }: { children: ReactNode }) {
-	const [config, setConfig] = useState<AppConfig>({
-		// This would eventually be loaded from a user's profile or API
-		id: "user-default",
-		userId: "guest",
-		createdAt: new Date().toISOString(),
-		updatedAt: new Date().toISOString(),
-		...DEFAULT_CONFIG,
+	const [config, setConfig] = useState<AppConfig>(() => {
+		// Try to load from localStorage first
+		if (configStorage.isAvailable()) {
+			const stored = configStorage.load();
+			if (stored) {
+				return stored;
+			}
+		}
+
+		// Fall back to default config
+		return {
+			id: "user-default",
+			userId: "guest",
+			createdAt: new Date().toISOString(),
+			updatedAt: new Date().toISOString(),
+			...DEFAULT_CONFIG,
+		};
 	});
+
+	// Save to localStorage whenever config changes
+	useEffect(() => {
+		if (configStorage.isAvailable()) {
+			configStorage.save(config);
+		}
+	}, [config]);
 
 	const updateConfig = (updates: Partial<AppConfig>) => {
 		setConfig((prev) => ({ ...prev, ...updates, updatedAt: new Date().toISOString() }));
@@ -45,8 +72,25 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
 		updateComponent("clock", updates);
 	};
 
+	const updateMessage = (updates: Partial<MessageConfig>) => {
+		updateComponent("message", updates);
+	};
+
+	const updateCountdownTimer = (updates: Partial<CountdownTimerConfig>) => {
+		updateComponent("countdownTimer", updates);
+	};
+
 	return (
-		<ConfigContext.Provider value={{ config, updateConfig, updateComponent, updateClock }}>
+		<ConfigContext.Provider
+			value={{
+				config,
+				updateConfig,
+				updateComponent,
+				updateClock,
+				updateMessage,
+				updateCountdownTimer,
+			}}
+		>
 			{children}
 		</ConfigContext.Provider>
 	);
