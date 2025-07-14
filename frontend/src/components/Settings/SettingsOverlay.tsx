@@ -1,4 +1,7 @@
+import { useState } from "react";
 import { useConfig } from "../../contexts/ConfigContext";
+import { ToggleSwitch } from "./ToggleSwitch";
+import { ClockSettingsMenu } from "./ClockSettingsMenu";
 
 interface SettingsOverlayProps {
 	isOpen: boolean;
@@ -7,6 +10,7 @@ interface SettingsOverlayProps {
 
 export function SettingsOverlay({ isOpen, onClose }: SettingsOverlayProps) {
 	const { config, updateClock } = useConfig();
+	const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
 
 	if (!isOpen) return null;
 
@@ -83,63 +87,52 @@ export function SettingsOverlay({ isOpen, onClose }: SettingsOverlayProps) {
 
 				<h1 style={{ marginBottom: "32px", fontWeight: 600 }}>Settings</h1>
 
-				{/* Clock Settings */}
-				<section style={{ marginBottom: "32px" }}>
-					<h2 style={{ marginBottom: "16px", fontWeight: 500 }}>Clock</h2>
+				{/* Main Settings or Submenu */}
+				{activeSubmenu === "clock" ? (
+					<ClockSettingsMenu onClose={() => setActiveSubmenu(null)} />
+				) : (
+					<div className="settings-main">
+						{/* Clock Component Section */}
+						<section style={{ marginBottom: "32px" }}>
+							<h2 style={{ marginBottom: "16px", fontWeight: 500 }}>Components</h2>
 
-					<div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-						{/* Active Toggle */}
-						<label style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-							<input
-								type="checkbox"
-								checked={config.clock.active}
-								onChange={(e) => updateClock({ active: e.target.checked })}
-								style={{ transform: "scale(1.2)" }}
-							/>
-							Active
-						</label>
-
-						{/* Type Selection */}
-						<div>
-							<label style={{ display: "block", marginBottom: "8px" }}>Type:</label>
-							<select
-								value={config.clock.type}
-								onChange={(e) => updateClock({ type: e.target.value as "analog" | "digital" })}
-								style={{
-									background: "rgba(255, 255, 255, 0.1)",
-									border: "1px solid rgba(255, 255, 255, 0.3)",
-									borderRadius: "8px",
-									padding: "8px 12px",
-									color: "white",
-									fontSize: "16px",
-								}}
-							>
-								<option value="analog">Analog</option>
-								<option value="digital">Digital</option>
-							</select>
-						</div>
-
-						{/* Show Date Toggle */}
-						<label style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-							<input
-								type="checkbox"
-								checked={config.clock.showDate}
-								onChange={(e) => updateClock({ showDate: e.target.checked })}
-								style={{ transform: "scale(1.2)" }}
-							/>
-							Show Date
-						</label>
+							<div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+								{/* Clock Active Toggle */}
+								<div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+									<ToggleSwitch
+										label="Clock"
+										isOn={config.components.clock.isActive}
+										onToggle={() => updateClock({ isActive: !config.components.clock.isActive })}
+									/>
+									{config.components.clock.isActive && (
+										<button
+											onClick={() => setActiveSubmenu("clock")}
+											className="submenu-button"
+											style={{
+												background: "rgba(255, 255, 255, 0.1)",
+												border: "1px solid rgba(255, 255, 255, 0.3)",
+												borderRadius: "8px",
+												padding: "8px 16px",
+												color: "white",
+												fontSize: "14px",
+												cursor: "pointer",
+												transition: "all 0.2s",
+											}}
+											onMouseOver={(e) => {
+												e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
+											}}
+											onMouseOut={(e) => {
+												e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.1)";
+											}}
+										>
+											Configure →
+										</button>
+									)}
+								</div>
+							</div>
+						</section>
 					</div>
-				</section>
-
-				{/* Instructions */}
-				<section style={{ marginBottom: "32px" }}>
-					<h2 style={{ marginBottom: "16px", fontWeight: 500 }}>Clock Controls</h2>
-					<div style={{ fontSize: "14px", opacity: 0.8, lineHeight: 1.5 }}>
-						<p style={{ marginBottom: "8px" }}>• Drag the clock to move it around the screen</p>
-						<p>• Double-click the clock to show resize handles</p>
-					</div>
-				</section>
+				)}
 			</div>
 		</div>
 	);

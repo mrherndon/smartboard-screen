@@ -1,18 +1,28 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useConfig } from "../contexts/ConfigContext";
+import { ToggleSwitch } from "../components/Settings/ToggleSwitch";
+import { ClockSettingsMenu } from "../components/Settings/ClockSettingsMenu";
 
 export default function Settings() {
-	// These would come from config context or API in a real app
-	const [clockActive, setClockActive] = useState(true);
-	const [clockType, setClockType] = useState<"digital" | "analog">("digital");
+	const { config, updateComponent } = useConfig();
+	const [activeSubmenu, setActiveSubmenu] = useState<"clock" | null>(null);
 	const navigate = useNavigate();
+
+	const handleClose = () => {
+		if (activeSubmenu) {
+			setActiveSubmenu(null);
+		} else {
+			navigate("/");
+		}
+	};
 
 	return (
 		<div className="settings-overlay">
 			{/* Backdrop blur */}
 			<div
 				className="settings-backdrop"
-				onClick={() => navigate("/")}
+				onClick={handleClose}
 				style={{
 					position: "fixed",
 					top: 0,
@@ -48,7 +58,7 @@ export default function Settings() {
 			>
 				{/* Close button */}
 				<button
-					onClick={() => navigate("/")}
+					onClick={handleClose}
 					style={{
 						position: "absolute",
 						top: "16px",
@@ -78,55 +88,40 @@ export default function Settings() {
 				</button>
 
 				<div className="settings-content">
-					<h1 style={{ marginBottom: "32px", fontSize: "28px", fontWeight: "600" }}>Display Settings</h1>
+					{!activeSubmenu && (
+						<>
+							<h1 style={{ marginBottom: "32px", fontSize: "28px", fontWeight: "600" }}>Display Settings</h1>
 
-					<section style={{ marginBottom: 32 }}>
-						<h2 style={{ marginBottom: "16px", fontSize: "20px", fontWeight: "500" }}>Clock Settings</h2>
-						<div style={{ display: "flex", alignItems: "center", gap: 24, flexWrap: "wrap" }}>
-							<label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "16px" }}>
-								<input
-									type="checkbox"
-									checked={clockActive}
-									onChange={(e) => setClockActive(e.target.checked)}
-									style={{ transform: "scale(1.2)" }}
-								/>
-								Active
-							</label>
-							<label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "16px" }}>
-								<input
-									type="radio"
-									name="clockType"
-									value="digital"
-									checked={clockType === "digital"}
-									onChange={() => setClockType("digital")}
-									style={{ transform: "scale(1.2)" }}
-								/>
-								Digital
-							</label>
-							<label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "16px" }}>
-								<input
-									type="radio"
-									name="clockType"
-									value="analog"
-									checked={clockType === "analog"}
-									onChange={() => setClockType("analog")}
-									style={{ transform: "scale(1.2)" }}
-								/>
-								Analog
-							</label>
-						</div>
-					</section>
+							<section style={{ marginBottom: 32 }}>
+								<h2 style={{ marginBottom: "16px", fontSize: "20px", fontWeight: "500" }}>Component Visibility</h2>
+								<div className="flex flex-col gap-4">
+									<ToggleSwitch
+										label="Show Clock"
+										isOn={config.components.clock.isActive}
+										onToggle={() => updateComponent("clock", { isActive: !config.components.clock.isActive })}
+									/>
+									{config.components.clock.isActive && (
+										<button onClick={() => setActiveSubmenu("clock")} className="submenu-button">
+											Configure Clock &rarr;
+										</button>
+									)}
+								</div>
+							</section>
 
-					{/* Placeholder for future settings */}
-					<section style={{ marginBottom: 32 }}>
-						<h2 style={{ marginBottom: "16px", fontSize: "20px", fontWeight: "500" }}>Schedule Settings</h2>
-						<p style={{ color: "rgba(255, 255, 255, 0.7)", fontSize: "14px" }}>Coming soon...</p>
-					</section>
+							{/* Placeholder for future settings */}
+							<section style={{ marginBottom: 32 }}>
+								<h2 style={{ marginBottom: "16px", fontSize: "20px", fontWeight: "500" }}>Schedule Settings</h2>
+								<p style={{ color: "rgba(255, 255, 255, 0.7)", fontSize: "14px" }}>Coming soon...</p>
+							</section>
 
-					<section style={{ marginBottom: 32 }}>
-						<h2 style={{ marginBottom: "16px", fontSize: "20px", fontWeight: "500" }}>Background Settings</h2>
-						<p style={{ color: "rgba(255, 255, 255, 0.7)", fontSize: "14px" }}>Coming soon...</p>
-					</section>
+							<section style={{ marginBottom: 32 }}>
+								<h2 style={{ marginBottom: "16px", fontSize: "20px", fontWeight: "500" }}>Background Settings</h2>
+								<p style={{ color: "rgba(255, 255, 255, 0.7)", fontSize: "14px" }}>Coming soon...</p>
+							</section>
+						</>
+					)}
+
+					{activeSubmenu === "clock" && <ClockSettingsMenu onClose={() => setActiveSubmenu(null)} />}
 				</div>
 			</div>
 		</div>

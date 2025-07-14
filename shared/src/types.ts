@@ -17,6 +17,24 @@ export interface ScheduleEntry {
 	updatedAt: string; // ISO 8601 format
 }
 
+export interface ComponentConfig {
+	isActive: boolean;
+	// Add other component-specific settings here if needed
+}
+
+export interface ClockConfig extends ComponentConfig {
+	type: "analog" | "digital";
+	showDate: boolean;
+	size: {
+		width: number;
+		height: number;
+	};
+	position: {
+		x: number; // percentage
+		y: number; // percentage
+	};
+}
+
 export interface AppConfig {
 	id: string;
 	userId: string; // Owner of this configuration
@@ -25,6 +43,10 @@ export interface AppConfig {
 		enabled: boolean;
 		interval: number; // minutes
 		groupId?: string; // ID of image group to rotate through
+	};
+	components: {
+		clock: ClockConfig;
+		// Add other components here, e.g., schedule, weather
 	};
 	clockFormat: "12h" | "24h";
 	clockStyle: "analog" | "digital";
@@ -167,6 +189,15 @@ export const DEFAULT_CONFIG: Omit<AppConfig, "id" | "userId" | "createdAt" | "up
 	backgroundRotation: {
 		enabled: false,
 		interval: 30, // 30 minutes
+	},
+	components: {
+		clock: {
+			isActive: true,
+			type: "digital",
+			showDate: true,
+			size: { width: 300, height: 300 },
+			position: { x: 50, y: 50 },
+		},
 	},
 	clockFormat: "12h",
 	clockStyle: "analog",

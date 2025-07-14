@@ -13,12 +13,12 @@ export function AnalogClock({ size = 200 }: AnalogClockProps) {
 			if (!canvas) return;
 			const ctx = canvas.getContext("2d");
 			if (!ctx) return;
-			const radius = canvas.width / 2;
+			const radius = (canvas.width - 8) / 2; // Account for internal padding
 
 			// Clear canvas
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 			ctx.save();
-			ctx.translate(radius, radius);
+			ctx.translate(canvas.width / 2, canvas.height / 2); // Center on the padded canvas
 
 			// Draw outer circle border only (no background fill)
 			ctx.beginPath();
@@ -149,9 +149,14 @@ export function AnalogClock({ size = 200 }: AnalogClockProps) {
 	return (
 		<canvas
 			ref={canvasRef}
-			width={size}
-			height={size}
-			style={{ display: "block", background: "none" }}
+			width={size + 8} // Add 8px internal padding to prevent clipping
+			height={size + 8} // Add 8px internal padding to prevent clipping
+			style={{
+				display: "block",
+				background: "none",
+				width: `${size}px`,
+				height: `${size}px`,
+			}}
 			aria-label="Analog clock"
 		/>
 	);

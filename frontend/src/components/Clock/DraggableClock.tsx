@@ -27,20 +27,21 @@ export function DraggableClock() {
 
 	// Calculate container dimensions based on clock type and settings
 	const getContainerDimensions = () => {
-		const baseSize = config.clock.size.width;
-		const padding = 24; // Increased padding for better visual balance
+		const baseSize = config.components.clock.size.width;
 
-		if (config.clock.type === "analog") {
-			// Analog clock: container size matches clock size with padding
-			const width = baseSize + padding * 2;
-			const height = baseSize + padding * 2 + (config.clock.showDate ? 40 : 0);
-			return { width, height, clockSize: baseSize };
+		if (config.components.clock.type === "analog") {
+			// Analog clock: baseSize directly controls the clock diameter
+			const padding = 16;
+			const size = baseSize + padding * 2;
+			const height = size + (config.components.clock.showDate ? 40 : 0);
+			return { width: size, height, clockSize: baseSize };
 		} else {
-			// Digital clock: more compact container, size based on text readability
-			const digitalHeight = Math.max(60, baseSize * 0.4); // More reasonable height for digital
-			const digitalWidth = Math.max(200, baseSize); // Maintain width for readability
+			// Digital clock: use baseSize more directly for responsive feel
+			const digitalWidth = Math.max(200, baseSize * 1.2); // Direct scaling with slight multiplier
+			const digitalHeight = Math.max(80, digitalWidth * 0.35); // Proportional height
+			const padding = 24;
 			const width = digitalWidth + padding * 2;
-			const height = digitalHeight + padding * 2 + (config.clock.showDate ? 40 : 0);
+			const height = digitalHeight + padding * 2 + (config.components.clock.showDate ? 40 : 0);
 			return { width, height, clockSize: digitalWidth, digitalHeight };
 		}
 	};
@@ -95,17 +96,34 @@ export function DraggableClock() {
 				}
 
 				// Maintain aspect ratio and enforce minimum size
-				const minSize = 100;
-				// Calculate max size based on screen dimensions - no hard limit
+				const minContainerSize = 150; // Minimum visual container size
+				// Calculate max size based on screen dimensions
 				const screenPadding = 50;
 				const maxWidthBasedOnScreen = window.innerWidth - screenPadding * 2;
 				const maxHeightBasedOnScreen = window.innerHeight - screenPadding * 2;
-				const maxSize = Math.min(maxWidthBasedOnScreen, maxHeightBasedOnScreen);
+				const maxContainerSize = Math.min(maxWidthBasedOnScreen, maxHeightBasedOnScreen);
 
-				const size = Math.max(minSize, Math.min(maxSize, Math.max(newWidth, newHeight)));
+				// Use the larger of width or height for 1:1 mouse scaling
+				const newContainerSize = Math.max(minContainerSize, Math.min(maxContainerSize, Math.max(newWidth, newHeight)));
+
+				// Derive base clock size from container size
+				let newBaseSize;
+				if (config.components.clock.type === "analog") {
+					// For analog: baseSize = containerSize - padding - dateSpace
+					const padding = 32; // 16 * 2
+					const dateSpace = config.components.clock.showDate ? 40 : 0;
+					newBaseSize = newContainerSize - padding - dateSpace;
+				} else {
+					// For digital: reverse the calculation from getContainerDimensions
+					const padding = 48; // 24 * 2
+					// digitalWidth = baseSize * 1.2, so baseSize = digitalWidth / 1.2
+					newBaseSize = (newContainerSize - padding) / 1.2;
+				}
+
+				newBaseSize = Math.max(100, newBaseSize); // Ensure minimum base size
 
 				updateClock({
-					size: { width: size, height: size },
+					size: { width: newBaseSize, height: newBaseSize },
 				});
 			}
 		};
@@ -152,8 +170,8 @@ export function DraggableClock() {
 		e.preventDefault();
 		setIsDragging(true);
 		setDragOffset({
-			x: e.clientX - (config.clock.position.x * window.innerWidth) / 100,
-			y: e.clientY - (config.clock.position.y * window.innerHeight) / 100,
+			x: e.clientX - (config.components.clock.position.x * window.innerWidth) / 100,
+			y: e.clientY - (config.components.clock.position.y * window.innerHeight) / 100,
 		});
 	};
 
@@ -170,8 +188,8 @@ export function DraggableClock() {
 		setResizeStart({
 			x: e.clientX,
 			y: e.clientY,
-			width: config.clock.size.width,
-			height: config.clock.size.height,
+			width: containerWidth, // Use actual visual container size
+			height: containerHeight, // Use actual visual container size
 		});
 	};
 
@@ -190,8 +208,8 @@ export function DraggableClock() {
 			ref={containerRef}
 			style={{
 				position: "absolute",
-				left: `${config.clock.position.x}%`,
-				top: `${config.clock.position.y}%`,
+				left: `${config.components.clock.position.x}%`,
+				top: `${config.components.clock.position.y}%`,
 				transform: "translate(-50%, -50%)",
 				cursor: isDragging ? "grabbing" : "grab",
 				userSelect: "none",
@@ -203,7 +221,7 @@ export function DraggableClock() {
 			<div
 				className="skim-background"
 				style={{
-					padding: "24px", // Increased padding for better visual balance
+					padding: config.components.clock.type === "digital" ? "20px 24px" : "16px", // Better vertical padding for digital
 					borderRadius: "12px",
 					backgroundColor: "rgba(0, 0, 0, 0.3)",
 					backdropFilter: "blur(8px)",
@@ -215,27 +233,11 @@ export function DraggableClock() {
 					flexDirection: "column",
 					alignItems: "center",
 					justifyContent: "center",
-					gap: "12px",
+					gap: config.components.clock.type === "digital" ? "12px" : "16px", // Balanced gap for both types
 				}}
 			>
-				{/* Clock Component */}
-				<div
-					style={{
-						display: "flex",
-						justifyContent: "center",
-						alignItems: "center",
-						flexShrink: 0,
-						...(config.clock.type === "digital" && {
-							height: `${digitalHeight}px`,
-							width: `${clockSize}px`,
-						}),
-					}}
-				>
-					{config.clock.type === "analog" ? <AnalogClock size={clockSize} /> : <DigitalClock size={clockSize} />}
-				</div>
-
-				{/* Date Display */}
-				{config.clock.showDate && (
+				{/* Date Display - Moved to top */}
+				{config.components.clock.showDate && (
 					<div
 						style={{
 							color: "white",
@@ -253,6 +255,28 @@ export function DraggableClock() {
 						{formatDate()}
 					</div>
 				)}
+
+				{/* Clock Component */}
+				<div
+					style={{
+						display: "flex",
+						justifyContent: "center",
+						alignItems: "center",
+						flexShrink: 0,
+						...(config.components.clock.type === "digital" && {
+							height: `${digitalHeight}px`,
+							width: `${clockSize}px`,
+						}),
+					}}
+				>
+					{config.components.clock.type === "analog" ? (
+						<AnalogClock size={clockSize} />
+					) : (
+						<DigitalClock size={clockSize} />
+					)}
+				</div>
+
+				{/* Date Display - Removed from bottom */}
 
 				{/* Resize Handles */}
 				{showResizeHandles && (

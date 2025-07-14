@@ -1,50 +1,55 @@
 import { createContext, useContext, useState, ReactNode } from "react";
+import { AppConfig, ComponentConfig, ClockConfig, DEFAULT_CONFIG } from "../../../shared/src/types";
 
-interface ClockConfig {
-	active: boolean;
-	type: "analog" | "digital";
-	showDate: boolean;
-	position: { x: number; y: number };
-	size: { width: number; height: number };
-}
-
-interface AppConfig {
-	backgroundImageUrl?: string;
-	clock: ClockConfig;
-}
+type ComponentName = keyof AppConfig["components"];
 
 interface ConfigContextType {
 	config: AppConfig;
 	updateConfig: (updates: Partial<AppConfig>) => void;
-	updateClock: (updates: Partial<ClockConfig>) => void;
+	updateComponent: (name: ComponentName, updates: Partial<ComponentConfig | ClockConfig>) => void;
+	updateClock: (updates: Partial<ClockConfig>) => void; // Keep for convenience
 }
 
 const ConfigContext = createContext<ConfigContextType | undefined>(undefined);
 
 export function ConfigProvider({ children }: { children: ReactNode }) {
 	const [config, setConfig] = useState<AppConfig>({
-		backgroundImageUrl: "/backgrounds/default.jpg",
-		clock: {
-			active: true,
-			type: "analog",
-			showDate: true,
-			position: { x: 50, y: 50 }, // Center by default (percentage)
-			size: { width: 200, height: 200 },
-		},
+		// This would eventually be loaded from a user's profile or API
+		id: "user-default",
+		userId: "guest",
+		createdAt: new Date().toISOString(),
+		updatedAt: new Date().toISOString(),
+		...DEFAULT_CONFIG,
 	});
 
 	const updateConfig = (updates: Partial<AppConfig>) => {
-		setConfig((prev) => ({ ...prev, ...updates }));
+		setConfig((prev) => ({ ...prev, ...updates, updatedAt: new Date().toISOString() }));
 	};
 
-	const updateClock = (updates: Partial<ClockConfig>) => {
+	const updateComponent = (name: ComponentName, updates: Partial<ComponentConfig | ClockConfig>) => {
 		setConfig((prev) => ({
 			...prev,
-			clock: { ...prev.clock, ...updates },
+			components: {
+				...prev.components,
+				[name]: {
+					...prev.components[name],
+					...updates,
+				},
+			},
+			updatedAt: new Date().toISOString(),
 		}));
 	};
 
-	return <ConfigContext.Provider value={{ config, updateConfig, updateClock }}>{children}</ConfigContext.Provider>;
+	// For backward compatibility and ease of use in the clock component
+	const updateClock = (updates: Partial<ClockConfig>) => {
+		updateComponent("clock", updates);
+	};
+
+	return (
+		<ConfigContext.Provider value={{ config, updateConfig, updateComponent, updateClock }}>
+			{children}
+		</ConfigContext.Provider>
+	);
 }
 
 export function useConfig() {

@@ -28,7 +28,7 @@ export default function DisplayScreen() {
 				<GearIcon onClick={() => setShowSettings(true)} aria-label="Settings" />
 			</div>
 
-			<div className="display-overlay">{config.clock.active && <DraggableClock />}</div>
+			<div className="display-overlay">{config.components.clock.isActive && <DraggableClock />}</div>
 
 			{/* Settings overlay */}
 			<SettingsOverlay isOpen={showSettings} onClose={() => setShowSettings(false)} />
