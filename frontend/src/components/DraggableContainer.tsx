@@ -1,5 +1,4 @@
 import { useState, useRef, useCallback, useEffect, ReactNode } from "react";
-import { motion } from "framer-motion";
 
 export interface Position {
 	x: number;
@@ -34,39 +33,93 @@ export function DraggableContainer({
 	const [isDragging, setIsDragging] = useState(false);
 	const [isResizing, setIsResizing] = useState(false);
 	const [showResizeHandles, setShowResizeHandles] = useState(false);
+	const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 	const containerRef = useRef<HTMLDivElement>(null);
 
-	const handleDragStart = useCallback(() => {
-		if (disabled) return;
-		setIsDragging(true);
-	}, [disabled]);
+	// Calculate container dimensions - fix aspect ratio calculation
+	const width = size;
+	const height = aspectRatio ? size / aspectRatio : size;
 
-	const handleDragEnd = useCallback(() => {
-		setIsDragging(false);
+	// Handle mouse move for dragging (like the clock does)
+	useEffect(() => {
+		const handleMouseMove = (e: MouseEvent) => {
+			if (isDragging && !disabled) {
+				// Use actual element bounds for boundary detection
+				const element = containerRef.current;
+				if (!element) return;
+
+				const rect = element.getBoundingClientRect();
+				const actualWidth = rect.width;
+				const actualHeight = rect.height;
+
+				// Calculate new position accounting for actual element size
+				const halfWidth = (actualWidth / 2 / window.innerWidth) * 100;
+				const halfHeight = (actualHeight / 2 / window.innerHeight) * 100;
+
+				const newX = ((e.clientX - dragOffset.x) / window.innerWidth) * 100;
+				const newY = ((e.clientY - dragOffset.y) / window.innerHeight) * 100;
+
+				// Constrain to screen bounds using actual element size
+				const constrainedX = Math.max(halfWidth, Math.min(100 - halfWidth, newX));
+				const constrainedY = Math.max(halfHeight, Math.min(100 - halfHeight, newY));
+
+				onPositionChange({ x: constrainedX, y: constrainedY });
+			}
+		};
+
+		const handleMouseUp = () => {
+			setIsDragging(false);
+		};
+
+		if (isDragging) {
+			document.addEventListener("mousemove", handleMouseMove);
+			document.addEventListener("mouseup", handleMouseUp);
+		}
+
+		return () => {
+			document.removeEventListener("mousemove", handleMouseMove);
+			document.removeEventListener("mouseup", handleMouseUp);
+		};
+	}, [isDragging, dragOffset, onPositionChange, disabled]);
+
+	// Hide resize handles when clicking outside
+	useEffect(() => {
+		const handleClickOutside = (e: MouseEvent) => {
+			if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+				setShowResizeHandles(false);
+			}
+		};
+
+		document.addEventListener("mousedown", handleClickOutside);
+		return () => document.removeEventListener("mousedown", handleClickOutside);
 	}, []);
 
-	const handleDrag = useCallback(
-		(_event: any, info: any) => {
+	const handleMouseDown = useCallback(
+		(e: React.MouseEvent) => {
 			if (disabled) return;
-			const container = containerRef.current?.parentElement;
-			if (!container) return;
-
-			const containerRect = container.getBoundingClientRect();
-			// Convert drag offset to percentage directly
-			const deltaXPercent = (info.offset.x / containerRect.width) * 100;
-			const deltaYPercent = (info.offset.y / containerRect.height) * 100;
-
-			const newX = Math.max(0, Math.min(100, position.x + deltaXPercent));
-			const newY = Math.max(0, Math.min(100, position.y + deltaYPercent));
-
-			onPositionChange({ x: newX, y: newY });
+			e.preventDefault();
+			setIsDragging(true);
+			setDragOffset({
+				x: e.clientX - (position.x * window.innerWidth) / 100,
+				y: e.clientY - (position.y * window.innerHeight) / 100,
+			});
 		},
-		[onPositionChange, disabled, position]
+		[disabled, position]
+	);
+
+	const handleDoubleClick = useCallback(
+		(e: React.MouseEvent) => {
+			if (disabled) return;
+			e.preventDefault();
+			setShowResizeHandles(!showResizeHandles);
+		},
+		[disabled, showResizeHandles]
 	);
 
 	const handleResizeStart = useCallback(
 		(direction: string, event: React.MouseEvent) => {
 			if (disabled) return;
+			event.preventDefault();
 			event.stopPropagation();
 			setIsResizing(true);
 
@@ -79,10 +132,22 @@ export function DraggableContainer({
 				const deltaY = e.clientY - startMouseY;
 
 				let delta = 0;
-				if (direction.includes("right") || direction.includes("bottom")) {
-					delta = aspectRatio ? Math.max(deltaX, deltaY) : deltaX;
+
+				// For aspect ratio components, use the larger magnitude delta for more responsive feel
+				if (aspectRatio) {
+					const absDeltaX = Math.abs(deltaX);
+					const absDeltaY = Math.abs(deltaY);
+
+					if (absDeltaX > absDeltaY) {
+						// Use horizontal delta
+						delta = direction.includes("right") ? deltaX : -deltaX;
+					} else {
+						// Use vertical delta
+						delta = direction.includes("bottom") ? deltaY : -deltaY;
+					}
 				} else {
-					delta = aspectRatio ? Math.min(-deltaX, -deltaY) : -deltaX;
+					// For free resize, use horizontal delta
+					delta = direction.includes("right") ? deltaX : -deltaX;
 				}
 
 				const newSize = Math.max(minSize, Math.min(maxSize, startSize + delta * 2));
@@ -101,15 +166,6 @@ export function DraggableContainer({
 		[size, onSizeChange, minSize, maxSize, aspectRatio, disabled]
 	);
 
-	const width = aspectRatio ? size : size;
-	const height = aspectRatio ? size / aspectRatio : size;
-
-	const handleDoubleClick = () => {
-		if (!disabled) {
-			setShowResizeHandles(!showResizeHandles);
-		}
-	};
-
 	// Auto-hide resize handles after 5 seconds
 	useEffect(() => {
 		if (showResizeHandles) {
@@ -121,49 +177,91 @@ export function DraggableContainer({
 	}, [showResizeHandles]);
 
 	return (
-		<motion.div
+		<div
 			ref={containerRef}
-			drag={!disabled && !isResizing}
-			dragMomentum={false}
-			onDragStart={handleDragStart}
-			onDragEnd={handleDragEnd}
-			onDrag={handleDrag}
-			onDoubleClick={handleDoubleClick}
 			style={{
 				position: "absolute",
 				left: `${position.x}%`,
 				top: `${position.y}%`,
+				transform: "translate(-50%, -50%)",
 				width: `${width}px`,
 				height: `${height}px`,
 				cursor: isDragging ? "grabbing" : "grab",
+				userSelect: "none",
 				zIndex: isDragging || isResizing ? 1000 : 1,
 			}}
 			className={className}
+			onMouseDown={handleMouseDown}
+			onDoubleClick={handleDoubleClick}
 		>
 			{children}
 
-			{/* Resize Handles */}
+			{/* Resize Handles - positioned based on actual element bounds */}
 			{!disabled && showResizeHandles && (
 				<>
 					{/* Corner Handles */}
 					<div
-						className="absolute -top-1 -left-1 w-3 h-3 bg-white border border-gray-400 rounded-full cursor-nw-resize opacity-80 hover:opacity-100 transition-opacity"
+						style={{
+							position: "absolute",
+							top: "-8px",
+							left: "-8px",
+							width: "16px",
+							height: "16px",
+							backgroundColor: "rgba(255, 255, 255, 0.8)",
+							border: "2px solid rgba(0, 0, 0, 0.8)",
+							borderRadius: "50%",
+							cursor: "nw-resize",
+							zIndex: 1000,
+						}}
 						onMouseDown={(e) => handleResizeStart("top-left", e)}
 					/>
 					<div
-						className="absolute -top-1 -right-1 w-3 h-3 bg-white border border-gray-400 rounded-full cursor-ne-resize opacity-80 hover:opacity-100 transition-opacity"
+						style={{
+							position: "absolute",
+							top: "-8px",
+							right: "-8px",
+							width: "16px",
+							height: "16px",
+							backgroundColor: "rgba(255, 255, 255, 0.8)",
+							border: "2px solid rgba(0, 0, 0, 0.8)",
+							borderRadius: "50%",
+							cursor: "ne-resize",
+							zIndex: 1000,
+						}}
 						onMouseDown={(e) => handleResizeStart("top-right", e)}
 					/>
 					<div
-						className="absolute -bottom-1 -left-1 w-3 h-3 bg-white border border-gray-400 rounded-full cursor-sw-resize opacity-80 hover:opacity-100 transition-opacity"
+						style={{
+							position: "absolute",
+							bottom: "-8px",
+							left: "-8px",
+							width: "16px",
+							height: "16px",
+							backgroundColor: "rgba(255, 255, 255, 0.8)",
+							border: "2px solid rgba(0, 0, 0, 0.8)",
+							borderRadius: "50%",
+							cursor: "sw-resize",
+							zIndex: 1000,
+						}}
 						onMouseDown={(e) => handleResizeStart("bottom-left", e)}
 					/>
 					<div
-						className="absolute -bottom-1 -right-1 w-3 h-3 bg-white border border-gray-400 rounded-full cursor-se-resize opacity-80 hover:opacity-100 transition-opacity"
+						style={{
+							position: "absolute",
+							bottom: "-8px",
+							right: "-8px",
+							width: "16px",
+							height: "16px",
+							backgroundColor: "rgba(255, 255, 255, 0.8)",
+							border: "2px solid rgba(0, 0, 0, 0.8)",
+							borderRadius: "50%",
+							cursor: "se-resize",
+							zIndex: 1000,
+						}}
 						onMouseDown={(e) => handleResizeStart("bottom-right", e)}
 					/>
 				</>
 			)}
-		</motion.div>
+		</div>
 	);
 }

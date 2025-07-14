@@ -65,8 +65,8 @@ export function CountdownTimer({ size = 250 }: CountdownTimerProps) {
 				flexDirection: "column",
 				alignItems: "center",
 				justifyContent: "center",
-				width: `${size}px`,
-				minHeight: `${Math.max(200, size * 0.8)}px`,
+				width: "100%",
+				height: "100%",
 				padding: "20px",
 				color: "white",
 				textShadow: "0 2px 4px rgba(0, 0, 0, 0.8)",
@@ -76,6 +76,7 @@ export function CountdownTimer({ size = 250 }: CountdownTimerProps) {
 				border: `2px solid ${isFinished ? "rgba(239, 68, 68, 0.5)" : "rgba(255, 255, 255, 0.1)"}`,
 				backdropFilter: "blur(10px)",
 				gap: "12px",
+				boxSizing: "border-box",
 			}}
 			aria-label="Countdown timer"
 		>

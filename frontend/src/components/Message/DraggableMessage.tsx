@@ -19,6 +19,7 @@ export function DraggableMessage({ size, position, onPositionChange, onSizeChang
 			onSizeChange={onSizeChange}
 			minSize={150}
 			maxSize={800}
+			aspectRatio={2.5} // Wider rectangle for text
 			className="select-none"
 		>
 			<Message size={size} text={text} />

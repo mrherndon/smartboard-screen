@@ -8,7 +8,7 @@ import { SettingsOverlay } from "../components/Settings/SettingsOverlay";
 
 // Simple display screen for now - will expand with components later
 export default function DisplayScreen() {
-	const { config, updateMessage, updateCountdownTimer } = useConfig();
+	const { config, updateMessage, updateCountdownTimer, updateClock } = useConfig();
 	const backgroundUrl = config.backgroundImageUrl || "/backgrounds/default.jpg";
 	const [showSettings, setShowSettings] = useState(false);
 
@@ -31,7 +31,7 @@ export default function DisplayScreen() {
 			</div>
 
 			<div className="display-overlay">
-				{config.components.clock.isActive && <DraggableClock />}
+				{/* The clock is rendered outside the main grid now */}
 				{config.components.message.isActive && (
 					<DraggableMessage
 						size={config.components.message.size}
@@ -47,6 +47,14 @@ export default function DisplayScreen() {
 						position={config.components.countdownTimer.position}
 						onPositionChange={(position) => updateCountdownTimer({ position })}
 						onSizeChange={(size) => updateCountdownTimer({ size })}
+					/>
+				)}
+				{config.components.clock.isActive && (
+					<DraggableClock
+						position={config.components.clock.position}
+						size={config.components.clock.size.width}
+						onPositionChange={(position) => updateClock({ position })}
+						onSizeChange={(size) => updateClock({ size: { width: size, height: size } })}
 					/>
 				)}
 			</div>

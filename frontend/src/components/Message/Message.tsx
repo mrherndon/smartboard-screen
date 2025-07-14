@@ -13,8 +13,8 @@ export function Message({ size = 300, text, fontSize }: MessageProps) {
 				display: "flex",
 				alignItems: "center",
 				justifyContent: "center",
-				width: `${size}px`,
-				minHeight: `${Math.max(80, size * 0.2)}px`,
+				width: "100%",
+				height: "100%",
 				padding: "16px",
 				color: "white",
 				textShadow: "0 2px 4px rgba(0, 0, 0, 0.8)",
@@ -23,6 +23,7 @@ export function Message({ size = 300, text, fontSize }: MessageProps) {
 				borderRadius: "12px",
 				border: "1px solid rgba(255, 255, 255, 0.1)",
 				backdropFilter: "blur(10px)",
+				boxSizing: "border-box",
 			}}
 			aria-label={`Message: ${text}`}
 		>
